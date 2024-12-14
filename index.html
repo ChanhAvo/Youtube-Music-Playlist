@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Playlist Player</title>
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"
+    />
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="outer-wrapper flex">
+      <div class="music-player-wrapper flex">
+        <!-- Video Display -->
+        <div id="player"></div>
+
+        <!-- Playlist Controls -->
+        <div class="playlist-controls flex down-margin">
+          <input type="text" id="youtube-link" placeholder="Enter YouTube URL" />
+          <button id="add-to-playlist">Add</button>
+          <select id="playlist-select"></select>
+          <button id="create-playlist-btn">New Playlist</button>
+        </div>        
+
+        <!-- Playlist -->
+        <div class="playlist">
+          <ul id="playlist"></ul>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="music-icons-wrapper flex down-margin">
+          <button id="prev-btn"><i class="fa fa-step-backward fa-2x"></i></button>
+          <button id="play-pause-btn"><i class="fa fa-play-circle fa-2x"></i></button>
+          <button id="next-btn"><i class="fa fa-step-forward fa-2x"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="playlist.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
