@@ -1,7 +1,7 @@
 let player;
 let isPlaying = false;
 
-const API_KEY = ""; 
+const API_KEY = "AIzaSyCIlEn9GD1ZAb2Npc9eajK_9ejgTyZbBvg"; 
 
 
 async function checkVideoAvailability(videoId) {
