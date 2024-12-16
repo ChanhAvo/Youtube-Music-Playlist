@@ -13,15 +13,19 @@ class Playlist {
   addPriority(videoId) {
     const songIndex = this.songs.findIndex((song) => song.videoId === videoId);
 
-    if (!this.priorityQueue.includes(videoId)) {
-      this.priorityQueue.push(videoId);
-    }
+  if (songIndex !== -1) {
+    const [likedSong] = this.songs.splice(songIndex, 1);
+    this.priorityQueue = this.priorityQueue.filter((id) => id !== videoId);
+    this.priorityQueue.push(videoId);
 
-    if (songIndex !== -1) {
-
-      const [likedSong] = this.songs.splice(songIndex, 1);
-      this.songs.unshift(likedSong); 
+    let insertPosition = 0; 
+    for (let i = 0; i < this.songs.length; i++) {
+      if (this.priorityQueue.includes(this.songs[i].videoId)) {
+        insertPosition = i + 1; 
+      }
     }
+    this.songs.splice(insertPosition, 0, likedSong);
+  }
   }
 
   removePriority(videoId) {
