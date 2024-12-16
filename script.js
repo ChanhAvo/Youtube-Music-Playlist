@@ -1,7 +1,7 @@
 let player;
 let isPlaying = false;
 
-const API_KEY = "AIzaSyCIlEn9GD1ZAb2Npc9eajK_9ejgTyZbBvg"; 
+const API_KEY = ""; 
 
 async function checkVideoAvailability(videoId) {
   const url = `https://www.googleapis.com/youtube/v3/videos?part=status&id=${videoId}&key=${API_KEY}`;
