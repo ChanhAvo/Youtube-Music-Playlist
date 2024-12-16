@@ -3,11 +3,13 @@ let isPlaying = false;
 
 const API_KEY = "AIzaSyCIlEn9GD1ZAb2Npc9eajK_9ejgTyZbBvg"; 
 
-
 async function checkVideoAvailability(videoId) {
   const url = `https://www.googleapis.com/youtube/v3/videos?part=status&id=${videoId}&key=${API_KEY}`;
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("API request failed with status: " + response.status);
+    }
     const data = await response.json();
     if (data.items && data.items.length > 0) {
       const status = data.items[0].status;
@@ -16,6 +18,7 @@ async function checkVideoAvailability(videoId) {
     return false;
   } catch (error) {
     console.error("Error checking video availability:", error);
+    showWarning("There was an error checking the video availability. Please try again later.");
     return false;
   }
 }
@@ -24,6 +27,9 @@ async function fetchVideoTitle(videoId) {
   const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${API_KEY}`;
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("API request failed with status: " + response.status);
+    }
     const data = await response.json();
     if (data.items && data.items.length > 0) {
       return data.items[0].snippet.title; // Extract video title
@@ -31,10 +37,10 @@ async function fetchVideoTitle(videoId) {
     return "Unknown Title";
   } catch (error) {
     console.error("Error fetching video title:", error);
+    showWarning("There was an error fetching the video title. Please try again later.");
     return "Unknown Title";
   }
 }
-
 
 // Initialize YouTube IFrame API
 function onYouTubeIframeAPIReady() {
@@ -50,7 +56,7 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady() {
-  console.log("Player is ready"); // Debug log to ensure this is triggered
+  console.log("Player is ready");
   document.getElementById("play-pause-btn").addEventListener("click", togglePlayPause);
   document.getElementById("prev-btn").addEventListener("click", playPrevious);
   document.getElementById("next-btn").addEventListener("click", playNext);
@@ -71,7 +77,6 @@ function onPlayerStateChange(event) {
     playNext();
   }
 }
-
 
 function togglePlayPause() {
   if (isPlaying) {
@@ -116,11 +121,6 @@ async function addSongToPlaylist() {
     return;
   }
 
-  const isAvailable = await checkVideoAvailability(videoId);
-  if (!isAvailable) {
-    showWarning("This video is unavailable or restricted. Please try another link."); // Display warning
-    return;
-  }
 
   const title = await fetchVideoTitle(videoId); // Fetch title
   const playlist = playlistManager.getPlaylist(playlistName);
@@ -207,6 +207,25 @@ function updatePlaylistUI() {
       isPlaying = true;
     });
 
+    // Like button
+    const likeBtn = document.createElement("button");
+    likeBtn.className = "like-btn";
+    likeBtn.innerHTML = '<i class="fa fa-heart"></i>';
+    if (playlist.priorityQueue.includes(song.videoId)) {
+      likeBtn.classList.add("liked");
+    }
+    likeBtn.addEventListener("click", () => {
+      console.log("Heart button clicked!");
+      if (likeBtn.classList.contains("liked")) {
+        likeBtn.classList.remove("liked");
+        playlist.removePriority(song.videoId); 
+      } else {
+        likeBtn.classList.add("liked");
+        playlist.addPriority(song.videoId); 
+      }
+      updatePlaylistUI();
+    });
+
     // Remove button
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "Remove";
@@ -222,16 +241,18 @@ function updatePlaylistUI() {
     });
 
     li.appendChild(songTitle);
+    li.appendChild(likeBtn);
     li.appendChild(removeBtn);
     ul.appendChild(li);
   });
 }
 
 
+
 function updatePlaylistUIAfterRemoval() {
   const ul = document.getElementById("playlist");
-  ul.innerHTML = ""; // Clear existing list
+  ul.innerHTML = ""; 
   playlist.songs.forEach(song => {
-    updatePlaylistUI(song.videoId, song.title); // Rebuild the playlist UI
+    updatePlaylistUI(song.videoId, song.title); 
   });
 }
